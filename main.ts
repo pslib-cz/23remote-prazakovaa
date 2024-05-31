@@ -1,4 +1,4 @@
-radio.setFrequencyBand(66)
+radio.setFrequencyBand(73)
 radio.setTransmitPower(5)
 radio.setGroup(73)
 radio.setTransmitSerialNumber(true)
@@ -34,3 +34,38 @@ const servoMove = (direction: ServoDirection): void => {
     basic.pause(2000)
     PCAmotor.StopServo(PCAmotor.Servos.S1)
 }
+
+
+//
+
+
+
+type Protokol = {
+    x: number; //smer
+    y: number; //rychlost
+    //a: boolean; //tlacitko
+    //b: boolean; //tlacitko
+    //logo: boolean
+}
+
+let letter: string = ""
+//let btnA: boolean = input.buttonIsPressed(Button.A)
+//let btnB: boolean = input.buttonIsPressed(Button.B)
+
+
+basic.forever( function () {
+
+    let send: Protokol = {
+        x: input.acceleration(Dimension.X),
+        y: input.acceleration(Dimension.Y),
+        //a: btnA,
+        //b: btnB,
+        //logo: input.logoIsPressed()
+    }
+
+    letter = send.x + ";" + send.y + ";"
+    radio.sendString(letter)
+     
+    basic.showIcon(IconNames.Yes)
+    basic.pause(10)
+})
