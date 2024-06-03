@@ -1,4 +1,4 @@
-radio.setFrequencyBand(73)
+radio.setFrequencyBand(72)
 radio.setTransmitPower(5)
 radio.setGroup(73)
 radio.setTransmitSerialNumber(true)
@@ -12,13 +12,16 @@ enum Pins {
     trig = DigitalPin.P2,
     echo = DigitalPin.P1
 }
+
 enum ServoDirection {
     Left = 2,
     Center = 1,
     Right = 0
 }
+
+/*
 const allIRPins: Array<number> = [Pins.wr, Pins.wl, Pins.r, Pins.l, Pins.c, Pins.trig]
-for (let pin of allIRPins) {
+or (let pin of allIRPins) {
     pins.setPull(pin, PinPullMode.PullNone);
 }
 
@@ -34,38 +37,36 @@ const servoMove = (direction: ServoDirection): void => {
     basic.pause(2000)
     PCAmotor.StopServo(PCAmotor.Servos.S1)
 }
-
-
-//
+*/
 
 
 
-type Protokol = {
+type Protocol = {
     x: number; //smer
     y: number; //rychlost
-    //a: boolean; //tlacitko
-    //b: boolean; //tlacitko
-    //logo: boolean
 }
 
-let letter: string = ""
-//let btnA: boolean = input.buttonIsPressed(Button.A)
-//let btnB: boolean = input.buttonIsPressed(Button.B)
+let message: string
 
+basic.forever(function () {
+    let directionValue = input.acceleration(Dimension.X)
+    let speedValue = input.acceleration(Dimension.Y)
 
-basic.forever( function () {
-
-    let send: Protokol = {
-        x: input.acceleration(Dimension.X),
-        y: input.acceleration(Dimension.Y),
-        //a: btnA,
-        //b: btnB,
-        //logo: input.logoIsPressed()
+    let dataToSend: Protocol = {
+        x: directionValue,
+        y: speedValue
     }
 
-    letter = send.x + ";" + send.y + ";"
-    radio.sendString(letter)
-     
-    basic.showIcon(IconNames.Yes)
-    basic.pause(10)
+    let messageParts = [dataToSend.x, dataToSend.y]
+    message = messageParts.join(";") + ";"
+    radio.sendString(message)
+
+    basic.pause(100)
+    basic.showLeds(`
+        . # # . .
+        . # # # .
+        . # # # #
+        . # . . .
+        . # . . .
+    `)
 })
