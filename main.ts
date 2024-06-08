@@ -12,16 +12,13 @@ enum Pins {
     trig = DigitalPin.P2,
     echo = DigitalPin.P1
 }
-
 enum ServoDirection {
     Left = 2,
     Center = 1,
     Right = 0
 }
-
-/*
 const allIRPins: Array<number> = [Pins.wr, Pins.wl, Pins.r, Pins.l, Pins.c, Pins.trig]
-or (let pin of allIRPins) {
+for (let pin of allIRPins) {
     pins.setPull(pin, PinPullMode.PullNone);
 }
 
@@ -37,36 +34,72 @@ const servoMove = (direction: ServoDirection): void => {
     basic.pause(2000)
     PCAmotor.StopServo(PCAmotor.Servos.S1)
 }
-*/
 
-
-
-type Protocol = {
-    x: number; //smer
-    y: number; //rychlost
+type Protokol = {
+    x: number;
+    y: number;
+    a: boolean;
+    b: boolean;
+    logo: boolean
 }
 
-let message: string
+let proto: Protokol
+let acko: string = "";
+let becko: string = "";
+let loogo: string = "";
+let letter: string = ""
 
-basic.forever(function () {
-    let directionValue = input.acceleration(Dimension.X)
-    let speedValue = input.acceleration(Dimension.Y)
+basic.forever(function() {
 
-    let dataToSend: Protocol = {
-        x: directionValue,
-        y: speedValue
+acko = "0"
+becko = "0"
+loogo = "0"
+
+    proto = {
+        x: input.acceleration(Dimension.X),
+        y: input.acceleration(Dimension.Y),
+        a: false,
+        b: false,
+        logo: false,
     }
 
-    let messageParts = [dataToSend.x, dataToSend.y]
-    message = messageParts.join(";") + ";"
-    radio.sendString(message)
+if (input.buttonIsPressed(Button.A)) {
+    proto.a = true
+} else if (input.buttonIsPressed(Button.B)) {
+    proto.b = true
+}else if (input.logoIsPressed()){
+    proto.logo = true
+}
 
-    basic.pause(100)
-    basic.showLeds(`
-        . # # . .
-        . # # # .
-        . # # # #
-        . # . . .
-        . # . . .
-    `)
+basic.pause(500)
+
+encode(proto)
+
+/* OVLADANI
+letter = proto.x + ";" + proto.y
+radio.sendString(letter)
+*/
+
+//AUTONOMNI
+radio.sendString(acko + ";" + becko + ";" + loogo)
+
 })
+
+
+function encode (proto: Protokol) {
+    if (proto.a){
+        acko = "1"
+    }
+    
+    if (proto.b) {
+        becko = "1"
+    }
+
+    if (proto.logo) {
+        loogo = "1"
+    }
+
+    return {
+        acko, becko, loogo
+    }
+}
