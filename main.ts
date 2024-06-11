@@ -40,39 +40,39 @@ type Protokol = {
     y: number;
     a: boolean;
     b: boolean;
-    logo: boolean
+    ab: boolean;
+    logo: boolean;
+    stop: boolean
 }
 
 let proto: Protokol
 let acko: string = "";
 let becko: string = "";
+let aB: string = "";
 let loogo: string = "";
-let letter: string = ""
+let logoo: string = "";
+let letter: string = "";
+
 
 basic.forever(function() {
 
 acko = "0"
 becko = "0"
+aB = "0"
 loogo = "0"
+logoo = "0"
 
     proto = {
         x: input.acceleration(Dimension.X),
         y: input.acceleration(Dimension.Y),
-        a: false,
-        b: false,
-        logo: false,
+        a: input.buttonIsPressed(Button.A),
+        b: input.buttonIsPressed(Button.B),
+        ab: input.buttonIsPressed(Button.AB),
+        logo: input.logoIsPressed(),
+        stop: input.isGesture(Gesture.ScreenDown)
     }
 
-if (input.buttonIsPressed(Button.A)) {
-    proto.a = true
-} else if (input.buttonIsPressed(Button.B)) {
-    proto.b = true
-}else if (input.logoIsPressed()){
-    proto.logo = true
-}
-
-basic.pause(500)
-
+basic.pause(200)
 encode(proto)
 
 /* OVLADANI
@@ -81,25 +81,32 @@ radio.sendString(letter)
 */
 
 //AUTONOMNI
-radio.sendString(acko + ";" + becko + ";" + loogo)
+letter = acko + ";" + becko + ";" + aB + ";" + loogo + ";" + logoo
+radio.sendString(letter)
+console.log(letter)
 
 })
 
 
 function encode (proto: Protokol) {
-    if (proto.a){
-        acko = "1"
+    if (proto.ab){
+        aB = "1"
     }
-    
-    if (proto.b) {
+    else if (proto.b) {
         becko = "1"
     }
-
-    if (proto.logo) {
+    else if (proto.a) {
+        acko = "1"
+    }
+    else if (proto.logo) {
         loogo = "1"
+    }
+    else if (proto.stop){
+        logoo = "1"
     }
 
     return {
-        acko, becko, loogo
+        acko, becko, aB, loogo, logoo
     }
 }
+
