@@ -72,7 +72,7 @@ logoo = "0"
         stop: input.isGesture(Gesture.ScreenDown)
     }
 
-basic.pause(200)
+basic.pause(350)
 encode(proto)
 
 /* OVLADANI
@@ -83,7 +83,7 @@ radio.sendString(letter)
 //AUTONOMNI
 letter = acko + ";" + becko + ";" + aB + ";" + loogo + ";" + logoo
 radio.sendString(letter)
-console.log(letter)
+basic.showIcon(IconNames.Tortoise)
 
 })
 
@@ -109,4 +109,3 @@ function encode (proto: Protokol) {
         acko, becko, aB, loogo, logoo
     }
 }
-
